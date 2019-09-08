@@ -1,3 +1,5 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - basic implement of blake2b
 
-* TODO: Describe initial release.
+* just follow the blacknet's blake2b to implment it with dart.
+
+## [0.0.2] - wrap a Blake2bHash for common use
