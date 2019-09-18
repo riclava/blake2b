@@ -3,3 +3,5 @@
 * just follow the blacknet's blake2b to implment it with dart.
 
 ## [0.0.2] - wrap a Blake2bHash for common use
+
+## [0.1.0] - use Uint8List instead of Int8List

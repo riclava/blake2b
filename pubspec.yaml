@@ -1,6 +1,6 @@
 name: blake2b
 description: A dart implement of blake2b referenced from blacknet.
-version: 0.0.2
+version: 0.1.0
 author: riclava <riclavaz@gmail.com>
 homepage: https://github.com/riclava/blake2b
 
@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   fixnum: ^0.10.9
+  hex: ^0.1.2
 
 dev_dependencies:
   flutter_test:

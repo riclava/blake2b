@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) [2019] [name of copyright holder]
-/// [Software Name] is licensed under the Mulan PSL v1.
+/// Copyright (c) [2019] [riclava]
+/// [blake2b] is licensed under the Mulan PSL v1.
 /// You can use this software according to the terms and conditions of the Mulan PSL v1.
 /// You may obtain a copy of Mulan PSL v1 at:
 ///     http://license.coscl.org.cn/MulanPSL
@@ -25,15 +25,15 @@ class Blake2b {
         digestSize == 384 ||
         digestSize == 512);
 
-    this._buffer = Int8List(Const.blockLengthBytes);
+    this._buffer = Uint8List(Const.blockLengthBytes);
     this._keyLength = 0;
     this._digestSize = digestSize ~/ 8;
     init();
   }
 
-  blake2bWithKey(final Int8List key) {
+  blake2bWithKey(final Uint8List key) {
     assert(key.length <= 64);
-    this._buffer = Int8List(Const.blockLengthBytes);
+    this._buffer = Uint8List(Const.blockLengthBytes);
     if (null != key) {
       this._key.addAll(key);
       this._keyLength = key.length;
@@ -45,9 +45,8 @@ class Blake2b {
     init();
   }
 
-  blake2b(final Int8List key, final int digestSize, final Int8List salt,
-      final Int8List personalization) {
-    this._buffer = Int8List(Const.blockLengthBytes);
+  blake2b(final Uint8List key, final int digestSize, final Uint8List salt, final Uint8List personalization) {
+    this._buffer = Uint8List(Const.blockLengthBytes);
     assert(1 <= digestSize && digestSize <= 64);
     this._digestSize = digestSize;
 
@@ -75,17 +74,16 @@ class Blake2b {
   // General parameters
   int _digestSize = 64; // 1- 64 bytes
   int _keyLength = 0; // 0 - 64 bytes for keyed hashing for MAC
-  Int8List _salt; // new byte[16];
-  Int8List _personalization; // new byte[16];
+  Uint8List _salt; // new byte[16];
+  Uint8List _personalization; // new byte[16];
 
   // The key
-  Int8List _key;
+  Uint8List _key;
 
   // whenever this buffer overflows, it will be processed
   // in the compress() function.
   // For performance issues, Int64 messages will not use this buffer.
-  Int8List _buffer =
-      Int8List(Const.blockLengthBytes); // new byte[BLOCK_LENGTH_BYTES];
+  Uint8List _buffer = Uint8List(Const.blockLengthBytes); // new byte[BLOCK_LENGTH_BYTES];
 
   // Position of last inserted byte:
   int _bufferPos = 0; // a value from 0 up to 128
@@ -95,8 +93,7 @@ class Blake2b {
 
   List<Int64> _chainValue; // state vector, in the Blake2b paper it is called: h
 
-  Int64 _t0 = Int64.fromInts(
-      0, 0); // holds last significant bits, counter (counts bytes)
+  Int64 _t0 = Int64.fromInts(0, 0); // holds last significant bits, counter (counts bytes)
   Int64 _t1 = Int64.fromInts(0, 0); // counter: Length up to 2^128 are supported
   Int64 _f0 = Int64.fromInts(0, 0); // finalization flag, for last block: ~0L
 
@@ -105,20 +102,16 @@ class Blake2b {
       final List<Int64> newChainValue = [];
 
       // 0
-      newChainValue.add(
-          Const.blake2bIv[0] ^ (_digestSize | (_keyLength << 8) | 0x1010000));
+      newChainValue.add(Const.blake2bIv[0] ^ (_digestSize | (_keyLength << 8) | 0x1010000));
       // 0x1010000 = ((fanout << 16) | (depth << 24) | (leafLength <<
       // 32));
       // with fanout = 1; depth = 0; leafLength = 0;
 
       // 1
-      newChainValue
-          .add(Const.blake2bIv[1]); // ^ nodeOffset; with nodeOffset = 0;
+      newChainValue.add(Const.blake2bIv[1]); // ^ nodeOffset; with nodeOffset = 0;
 
       // 2
-      newChainValue
-          .add(Const.blake2bIv[2]); // ^ ( nodeDepth | (innerHashLength <<
-      // 8) );
+      newChainValue.add(Const.blake2bIv[2]); // ^ ( nodeDepth | (innerHashLength << 8) );
       // with nodeDepth = 0; innerHashLength = 0;
 
       // 3
@@ -147,10 +140,8 @@ class Blake2b {
   }
 
   void _initializeInternalState() {
-    _internalState =
-        _arrayCopyI64(_chainValue, 0, _internalState, 0, _chainValue.length);
-    _internalState = _arrayCopyI64(
-        Const.blake2bIv, 0, _internalState, _chainValue.length, 4);
+    _internalState = _arrayCopyI64(_chainValue, 0, _internalState, 0, _chainValue.length);
+    _internalState = _arrayCopyI64(Const.blake2bIv, 0, _internalState, _chainValue.length, 4);
 
     _internalState[12] = _t0 ^ Const.blake2bIv[4];
     _internalState[13] = _t1 ^ Const.blake2bIv[5];
@@ -204,7 +195,7 @@ class Blake2b {
     }
   }
 
-  void update(Int8List message, int offset, int len) {
+  void update(Uint8List message, int offset, int len) {
     if (null == message || 0 == len) {
       return;
     }
@@ -258,7 +249,7 @@ class Blake2b {
     _bufferPos += (offset + len) - messagePos;
   }
 
-  int digest(final Int8List out, final int outOffset) {
+  int digest(final Uint8List out, final int outOffset) {
     _f0 = Const.f0;
     _t0 += _bufferPos;
 
@@ -273,7 +264,7 @@ class Blake2b {
         List<Int64>.filled(_internalState.length, Int64.fromInts(0, 0));
 
     for (int i = 0; i < _chainValue.length && (i * 8 < _digestSize); i++) {
-      Int8List bytes = ByteUtils.long2bytes(_chainValue[i]);
+      Uint8List bytes = ByteUtils.long2bytes(_chainValue[i]);
 
       if ((i * 8) < (_digestSize - 8)) {
         _arrayCopy(bytes, 0, out, outOffset + (i * 8), 8);
@@ -289,7 +280,7 @@ class Blake2b {
     return _digestSize;
   }
 
-  void _compress(Int8List message, int messagePos) {
+  void _compress(Uint8List message, int messagePos) {
     _initializeInternalState();
 
     List<Int64> m = List<Int64>.filled(16, Int64.fromInts(0, 0));
@@ -317,41 +308,32 @@ class Blake2b {
     }
 
     for (int offset = 0; offset < _chainValue.length; offset++) {
-      _chainValue[offset] = _chainValue[offset] ^
-          _internalState[offset] ^
-          _internalState[offset + 8];
+      _chainValue[offset] = _chainValue[offset] ^ _internalState[offset] ^ _internalState[offset + 8];
     }
   }
 
   void _g(Int64 m1, Int64 m2, int posA, int posB, int posC, int posD) {
     _internalState[posA] = _internalState[posA] + _internalState[posB] + m1;
-    _internalState[posD] =
-        ByteUtils.rotr64(_internalState[posD] ^ _internalState[posA], 32);
+    _internalState[posD] = ByteUtils.rotr64(_internalState[posD] ^ _internalState[posA], 32);
 
     _internalState[posC] = _internalState[posC] + _internalState[posD];
-    _internalState[posB] = ByteUtils.rotr64(
-        _internalState[posB] ^ _internalState[posC],
-        24); // replaces 25 of BLAKE
+    _internalState[posB] = ByteUtils.rotr64(_internalState[posB] ^ _internalState[posC], 24); // replaces 25 of BLAKE
 
     _internalState[posA] = _internalState[posA] + _internalState[posB] + m2;
-    _internalState[posD] =
-        ByteUtils.rotr64(_internalState[posD] ^ _internalState[posA], 16);
+    _internalState[posD] = ByteUtils.rotr64(_internalState[posD] ^ _internalState[posA], 16);
 
     _internalState[posC] = _internalState[posC] + _internalState[posD];
-    _internalState[posB] =
-        ByteUtils.rotr64(_internalState[posB] ^ _internalState[posC], 63);
+    _internalState[posB] = ByteUtils.rotr64(_internalState[posB] ^ _internalState[posC], 63);
   }
 
-  Int8List _arrayCopy(
-      Int8List src, int srcOffset, Int8List dst, int dstOffset, int length) {
+  Uint8List _arrayCopy(Uint8List src, int srcOffset, Uint8List dst, int dstOffset, int length) {
     for (var i = srcOffset; i < length; i++) {
       dst[dstOffset + i] = src[i];
     }
     return dst;
   }
 
-  List<Int64> _arrayCopyI64(List<Int64> src, int srcOffset, List<Int64> dst,
-      int dstOffset, int length) {
+  List<Int64> _arrayCopyI64(List<Int64> src, int srcOffset, List<Int64> dst, int dstOffset, int length) {
     for (var i = srcOffset; i < length; i++) {
       dst[dstOffset + i] = src[i];
     }

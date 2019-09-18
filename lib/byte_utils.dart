@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) [2019] [name of copyright holder]
-/// [Software Name] is licensed under the Mulan PSL v1.
+/// Copyright (c) [2019] [riclava]
+/// [blake2b] is licensed under the Mulan PSL v1.
 /// You can use this software according to the terms and conditions of the Mulan PSL v1.
 /// You may obtain a copy of Mulan PSL v1 at:
 ///     http://license.coscl.org.cn/MulanPSL
@@ -14,7 +14,8 @@ import 'dart:typed_data';
 import 'package:fixnum/fixnum.dart';
 
 class ByteUtils {
-  static Int64 bytes2long(final Int8List byteArray, final int offset) {
+  static Int64 bytes2long(final Uint8List byteArray, final int offset) {
+    // & 0xFF is useless
     return ((Int64.fromInts(0, byteArray[offset] & 0xFF)) |
         ((byteArray[offset + 1] & 0xFF) << 8) |
         ((byteArray[offset + 2] & 0xFF) << 16) |
@@ -25,8 +26,8 @@ class ByteUtils {
         ((byteArray[offset + 7] & 0xFF) << 56));
   }
 
-  static Int8List long2bytes(final Int64 longValue) {
-    return Int8List.fromList(longValue.toBytes());
+  static Uint8List long2bytes(final Int64 longValue) {
+    return Uint8List.fromList(longValue.toBytes());
   }
 
   static Int64 rotr64(final Int64 x, final int rot) {

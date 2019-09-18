@@ -9,8 +9,14 @@
 /// PURPOSE.
 /// See the Mulan PSL v1 for more details.
 ///
-class Ushr {
-  static int ushr(int n, int amount) {
-    return (n & 0xFFFFFFFF) >> amount;
+import 'dart:typed_data';
+
+class Utils {
+  static Uint8List int8list2uint8list(Int8List l) {
+    Uint8List r = Uint8List(l.length);
+    for (int i = 0; i < l.length; i++) {
+      r[i] = l[i] & 0xFF;
+    }
+    return r;
   }
 }
