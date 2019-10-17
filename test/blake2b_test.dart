@@ -17,7 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hex/hex.dart';
 
 void main() {
-  bool _int8ListEqual(Uint8List a, Uint8List b) {
+  bool _uint8ListEqual(Uint8List a, Uint8List b) {
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
       if (a[i] != b[i]) {
@@ -27,7 +27,11 @@ void main() {
     return true;
   }
   test('test', () {
-    // test blake2
+
+    ///
+    /// CASE 1
+    ///
+
     // what we expect
     // bip = mean fury common entire zoo cash fragile dilemma retire appear insect park
     // hash = A064E3C0E7D606F7EE717718FD23B943328ACD8CC20DE29B4053FC1C9D3888F6
@@ -43,25 +47,33 @@ void main() {
     for (int i = 0; i < bip.length; i++) {
       message[i] = bip.codeUnitAt(i);
     }
-    print("Int8List message = $message");
 
     // hash from bytes to bytes
     var umessage = Utils.int8list2uint8list(message);
-    print("Uint8List message = $umessage");
 
     var bytes = Blake2bHash.hash(umessage, 0, umessage.length);
-    print("hash bytes = $bytes");
-    assert(_int8ListEqual(bytes, uexpect));
+    assert(_uint8ListEqual(bytes, uexpect));
 
     // hash from hex string to hex string
     var lowerCaseHash = Blake2bHash.hashHexString2HexString(HEX.encode(message));
-    print("lowerCaseHash = $lowerCaseHash");
     assert(lowerCaseHash == upperCaseHash.toLowerCase());
 
     // hash from utf8 string to hex string
     lowerCaseHash = Blake2bHash.hashUtf8String2HexString(bip);
-    print("lowerCaseHash = $lowerCaseHash");
     assert(lowerCaseHash == upperCaseHash.toLowerCase());
 
+
+    ///
+    /// CASE 2
+    ///
+
+    // another test
+    // hexString = 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000eea2f40ef9c40caffc91d82c3332456039d9562290fe0957bad9ca7bc8e9159900000014d7338a9fc7b42de9c2045635a2bf2ec628f47adec76f8ee6caaa5397025b74e400000000000186a000ae0000000000989680a54407d81a2e4d5c72b8d784a56f88736c64bdf90883c12b6ffff6ec892b2b0c00846d656d6f
+    // hash = ff773f774a4489c98429d37ba1e8c91ce0ac26af27cd32c1b6ef17843e87eb39
+    var hexString = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000eea2f40ef9c40caffc91d82c3332456039d9562290fe0957bad9ca7bc8e9159900000014d7338a9fc7b42de9c2045635a2bf2ec628f47adec76f8ee6caaa5397025b74e400000000000186a000ae0000000000989680a54407d81a2e4d5c72b8d784a56f88736c64bdf90883c12b6ffff6ec892b2b0c00846d656d6f";
+    var messageBytes = Utils.int8list2uint8list(Int8List.fromList(HEX.decode(hexString)));
+    var hash = Blake2bHash.hash(messageBytes, 64, messageBytes.length - 64);
+    var expectedHash = Utils.int8list2uint8list(Int8List.fromList(HEX.decode("ff773f774a4489c98429d37ba1e8c91ce0ac26af27cd32c1b6ef17843e87eb39")));
+    assert(_uint8ListEqual(hash, expectedHash));
   });
 }

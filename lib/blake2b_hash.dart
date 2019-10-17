@@ -51,15 +51,13 @@ class Blake2bHash {
     Uint8List bytes = Uint8List(digestSize ~/ 8);
     var b = Blake2b(digestSize);
     b.update(message, 0, message.length);
-    b.digest(bytes, 0);
-    return bytes;
+    return b.digest(bytes, 0);
   }
 
   static Uint8List hash(Uint8List message, int offset, int len) {
     Uint8List bytes = Uint8List(_size);
     var b = Blake2b(_digestSize);
-    b.update(message, offset, len);
-    b.digest(bytes, 0);
-    return bytes;
+    b.update(message, offset, len);    
+    return b.digest(bytes, 0);
   }
 }

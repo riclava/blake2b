@@ -209,7 +209,7 @@ class Blake2b {
       remainingLength = Const.blockLengthBytes - _bufferPos;
       if (remainingLength < len) {
         // full buffer + at least 1 byte
-        _arrayCopy(message, offset, _buffer, _bufferPos, remainingLength);
+        _buffer = _arrayCopy(message, offset, _buffer, _bufferPos, remainingLength);
         _t0 += Const.blockLengthBytes;
         if (_t0 == 0) {
           // if message > 2^64
@@ -219,7 +219,7 @@ class Blake2b {
         _bufferPos = 0;
         _buffer.fillRange(0, _buffer.length, 0);
       } else {
-        _arrayCopy(message, offset, _buffer, _bufferPos, len);
+        _buffer = _arrayCopy(message, offset, _buffer, _bufferPos, len);
         _bufferPos += len;
         return;
       }
@@ -244,12 +244,12 @@ class Blake2b {
     }
 
     // fill the buffer with left bytes, this might be a full block
-    _arrayCopy(message, messagePos, _buffer, 0, offset + len - messagePos);
+    _buffer = _arrayCopy(message, messagePos, _buffer, 0, offset + len - messagePos);
 
     _bufferPos += (offset + len) - messagePos;
   }
 
-  int digest(final Uint8List out, final int outOffset) {
+  Uint8List digest(Uint8List out, final int outOffset) {
     _f0 = Const.f0;
     _t0 += _bufferPos;
 
@@ -267,9 +267,9 @@ class Blake2b {
       Uint8List bytes = ByteUtils.long2bytes(_chainValue[i]);
 
       if ((i * 8) < (_digestSize - 8)) {
-        _arrayCopy(bytes, 0, out, outOffset + (i * 8), 8);
+        out = _arrayCopy(bytes, 0, out, outOffset + (i * 8), 8);
       } else {
-        _arrayCopy(bytes, 0, out, outOffset + (i * 8), _digestSize - (i * 8));
+        out = _arrayCopy(bytes, 0, out, outOffset + (i * 8), _digestSize - (i * 8));
       }
     }
 
@@ -277,7 +277,7 @@ class Blake2b {
 
     reset();
 
-    return _digestSize;
+    return out;
   }
 
   void _compress(Uint8List message, int messagePos) {
@@ -289,22 +289,14 @@ class Blake2b {
     }
 
     for (int round = 0; round < Const.rounds; round++) {
-      _g(m[Const.blake2Sigma[round][0]], m[Const.blake2Sigma[round][1]], 0, 4,
-          8, 12);
-      _g(m[Const.blake2Sigma[round][2]], m[Const.blake2Sigma[round][3]], 1, 5,
-          9, 13);
-      _g(m[Const.blake2Sigma[round][4]], m[Const.blake2Sigma[round][5]], 2, 6,
-          10, 14);
-      _g(m[Const.blake2Sigma[round][6]], m[Const.blake2Sigma[round][7]], 3, 7,
-          11, 15);
-      _g(m[Const.blake2Sigma[round][8]], m[Const.blake2Sigma[round][9]], 0, 5,
-          10, 15);
-      _g(m[Const.blake2Sigma[round][10]], m[Const.blake2Sigma[round][11]], 1, 6,
-          11, 12);
-      _g(m[Const.blake2Sigma[round][12]], m[Const.blake2Sigma[round][13]], 2, 7,
-          8, 13);
-      _g(m[Const.blake2Sigma[round][14]], m[Const.blake2Sigma[round][15]], 3, 4,
-          9, 14);
+      _g(m[Const.blake2Sigma[round][0]], m[Const.blake2Sigma[round][1]], 0, 4, 8, 12);
+      _g(m[Const.blake2Sigma[round][2]], m[Const.blake2Sigma[round][3]], 1, 5, 9, 13);
+      _g(m[Const.blake2Sigma[round][4]], m[Const.blake2Sigma[round][5]], 2, 6, 10, 14);
+      _g(m[Const.blake2Sigma[round][6]], m[Const.blake2Sigma[round][7]], 3, 7, 11, 15);
+      _g(m[Const.blake2Sigma[round][8]], m[Const.blake2Sigma[round][9]], 0, 5, 10, 15);
+      _g(m[Const.blake2Sigma[round][10]], m[Const.blake2Sigma[round][11]], 1, 6, 11, 12);
+      _g(m[Const.blake2Sigma[round][12]], m[Const.blake2Sigma[round][13]], 2, 7, 8, 13);
+      _g(m[Const.blake2Sigma[round][14]], m[Const.blake2Sigma[round][15]], 3, 4, 9, 14);
     }
 
     for (int offset = 0; offset < _chainValue.length; offset++) {
@@ -327,15 +319,15 @@ class Blake2b {
   }
 
   Uint8List _arrayCopy(Uint8List src, int srcOffset, Uint8List dst, int dstOffset, int length) {
-    for (var i = srcOffset; i < length; i++) {
-      dst[dstOffset + i] = src[i];
+    for (var i = 0; i < length; i++) {
+      dst[dstOffset + i] = src[srcOffset + i];
     }
     return dst;
   }
 
   List<Int64> _arrayCopyI64(List<Int64> src, int srcOffset, List<Int64> dst, int dstOffset, int length) {
-    for (var i = srcOffset; i < length; i++) {
-      dst[dstOffset + i] = src[i];
+    for (var i = 0; i < length; i++) {
+      dst[dstOffset + i] = src[srcOffset + i];
     }
     return dst;
   }
