@@ -1,6 +1,6 @@
 name: blake2b
 description: A dart implement of blake2b referenced from blacknet.
-version: 0.1.1
+version: 0.1.2
 author: riclava <riclavaz@gmail.com>
 homepage: https://github.com/riclava/blake2b
 
