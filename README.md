@@ -53,3 +53,7 @@ var hash = Blake2bHash.hash(messageBytes, 64, messageBytes.length - 64);
 var expectedHash = Utils.int8list2uint8list(Int8List.fromList(HEX.decode("ff773f774a4489c98429d37ba1e8c91ce0ac26af27cd32c1b6ef17843e87eb39")));
 assert(_uint8ListEqual(hash, expectedHash));
 ```
+
+## pub ref
+
++ [ref](https://dart.cn/tools/pub/publishing)
