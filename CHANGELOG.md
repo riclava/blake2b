@@ -7,3 +7,5 @@
 ## [0.1.0] - use Uint8List instead of Int8List
 
 ## [0.1.2] - fix bug due to a wrong implement of array copy
+
+## [0.2.1] - null safety, remove flutter dependency
