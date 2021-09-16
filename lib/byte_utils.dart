@@ -17,13 +17,13 @@ class ByteUtils {
   static Int64 bytes2long(final Uint8List byteArray, final int offset) {
     // & 0xFF is useless
     return ((Int64.fromInts(0, byteArray[offset] & 0xFF)) |
-        ((byteArray[offset + 1] & 0xFF) << 8) |
-        ((byteArray[offset + 2] & 0xFF) << 16) |
-        ((byteArray[offset + 3] & 0xFF) << 24) |
-        ((byteArray[offset + 4] & 0xFF) << 32) |
-        ((byteArray[offset + 5] & 0xFF) << 40) |
-        ((byteArray[offset + 6] & 0xFF) << 48) |
-        ((byteArray[offset + 7] & 0xFF) << 56));
+        (Int64.parseInt((byteArray[offset + 1] & 0xFF).toString()) << 8) |
+        (Int64.parseInt((byteArray[offset + 2] & 0xFF).toString()) << 16) |
+        (Int64.parseInt((byteArray[offset + 3] & 0xFF).toString()) << 24) |
+        (Int64.parseInt((byteArray[offset + 4] & 0xFF).toString()) << 32) |
+        (Int64.parseInt((byteArray[offset + 5] & 0xFF).toString()) << 40) |
+        (Int64.parseInt((byteArray[offset + 6] & 0xFF).toString()) << 48) |
+        (Int64.parseInt((byteArray[offset + 7] & 0xFF).toString()) << 56));
   }
 
   static Uint8List long2bytes(final Int64 longValue) {

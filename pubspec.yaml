@@ -4,7 +4,7 @@ version: 0.2.1
 homepage: https://github.com/riclava/blake2b
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.14.0 <3.0.0'
 
 dependencies:
   fixnum: ^1.0.0
