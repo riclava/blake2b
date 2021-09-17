@@ -9,3 +9,5 @@
 ## [0.1.2] - fix bug due to a wrong implement of array copy
 
 ## [0.2.1] - null safety, remove flutter dependency
+
+## [0.2.2] - bugfix: bytes2long() overflow when in chrome see [Issue 1](https://github.com/riclava/blake2b/issues/1)
