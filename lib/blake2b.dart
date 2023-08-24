@@ -20,7 +20,9 @@ import 'package:fixnum/fixnum.dart';
 /// Blake2b
 class Blake2b {
   Blake2b(int digestSize) {
-    assert(digestSize == 160 ||
+    assert(
+        digestSize == 128 ||
+        digestSize == 160 ||
         digestSize == 256 ||
         digestSize == 384 ||
         digestSize == 512);
