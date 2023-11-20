@@ -6,7 +6,7 @@ A dart implement of  blake2b referenced from [blacknet](https://blacknet.ninja/)
 
 ```dart
 ///
-/// CASE 1
+/// CASE 1 - hash utf8 string
 ///
 
 // what we expect
@@ -41,7 +41,7 @@ assert(lowerCaseHash == upperCaseHash.toLowerCase());
 
 
 ///
-/// CASE 2
+/// CASE 2 - hash bytes
 ///
 
 // another test

@@ -11,3 +11,5 @@
 ## [0.2.1] - null safety, remove flutter dependency
 
 ## [0.2.2] - bugfix: bytes2long() overflow when in chrome see [Issue 1](https://github.com/riclava/blake2b/issues/1)
+
+## [0.2.3] - feature: new constructor `Blake2b.blake2b(final Uint8List? key, final int digestSize, final Uint8List? salt, final Uint8List? personalization)`

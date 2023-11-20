@@ -20,12 +20,7 @@ import 'package:fixnum/fixnum.dart';
 /// Blake2b
 class Blake2b {
   Blake2b(int digestSize) {
-    assert(
-        digestSize == 128 ||
-        digestSize == 160 ||
-        digestSize == 256 ||
-        digestSize == 384 ||
-        digestSize == 512);
+    assert(digestSize == 128 || digestSize == 160 || digestSize == 256 || digestSize == 384 || digestSize == 512);
 
     this._buffer = Uint8List(Const.blockLengthBytes);
     this._keyLength = 0;
@@ -36,18 +31,17 @@ class Blake2b {
   blake2bWithKey(final Uint8List key) {
     assert(key.length <= 64);
     this._buffer = Uint8List(Const.blockLengthBytes);
-    if (null != key) {
-      this._key!.addAll(key);
-      this._keyLength = key.length;
 
-      this._buffer.addAll(key);
-      this._bufferPos = Const.blockLengthBytes; // zero padding
-    }
+    this._key!.addAll(key);
+    this._keyLength = key.length;
+
+    this._buffer.addAll(key);
+    this._bufferPos = Const.blockLengthBytes;
     _digestSize = 64;
     init();
   }
 
-  blake2b(final Uint8List key, final int digestSize, final Uint8List salt, final Uint8List personalization) {
+  Blake2b.blake2b(final Uint8List? key, final int digestSize, final Uint8List? salt, final Uint8List? personalization) {
     this._buffer = Uint8List(Const.blockLengthBytes);
     assert(1 <= digestSize && digestSize <= 64);
     this._digestSize = digestSize;
@@ -73,6 +67,26 @@ class Blake2b {
     init();
   }
 
+  blake2b(final Uint8List key, final int digestSize, final Uint8List salt, final Uint8List personalization) {
+    this._buffer = Uint8List(Const.blockLengthBytes);
+    assert(1 <= digestSize && digestSize <= 64);
+    this._digestSize = digestSize;
+
+    assert(salt.length == 16);
+    this._salt!.addAll(salt);
+
+    assert(personalization.length == 16);
+    this._personalization!.addAll(personalization);
+
+    this._key!.addAll(key);
+    this._keyLength = key.length;
+
+    this._buffer.addAll(key);
+    this._bufferPos = Const.blockLengthBytes;
+
+    init();
+  }
+
   // General parameters
   int _digestSize = 64; // 1- 64 bytes
   int _keyLength = 0; // 0 - 64 bytes for keyed hashing for MAC
@@ -90,8 +104,7 @@ class Blake2b {
   // Position of last inserted byte:
   int _bufferPos = 0; // a value from 0 up to 128
 
-  List<Int64> _internalState = List<Int64>.filled(
-      16, Int64.fromInts(0, 0)); // In the Blake2b paper it is called: v
+  List<Int64> _internalState = List<Int64>.filled(16, Int64.fromInts(0, 0)); // In the Blake2b paper it is called: v
 
   List<Int64>? _chainValue; // state vector, in the Blake2b paper it is called: h
 
@@ -105,8 +118,7 @@ class Blake2b {
 
       // 0
       newChainValue.add(Const.blake2bIv[0] ^ (_digestSize | (_keyLength << 8) | 0x1010000));
-      // 0x1010000 = ((fanout << 16) | (depth << 24) | (leafLength <<
-      // 32));
+      // 0x1010000 = ((fanout << 16) | (depth << 24) | (leafLength << 32));
       // with fanout = 1; depth = 0; leafLength = 0;
 
       // 1
@@ -198,7 +210,7 @@ class Blake2b {
   }
 
   void update(Uint8List message, int offset, int len) {
-    if (null == message || 0 == len) {
+    if (0 == len) {
       return;
     }
 
@@ -232,9 +244,7 @@ class Blake2b {
     final int blockWiseLastPos = offset + len - Const.blockLengthBytes;
 
     // block wise 128 bytes
-    for (messagePos = offset + remainingLength;
-        messagePos < blockWiseLastPos;
-        messagePos += Const.blockLengthBytes) {
+    for (messagePos = offset + remainingLength; messagePos < blockWiseLastPos; messagePos += Const.blockLengthBytes) {
       // without buffer:
       _t0 += Const.blockLengthBytes;
 
@@ -262,8 +272,7 @@ class Blake2b {
     _compress(_buffer, 0);
 
     _buffer.fillRange(0, _buffer.length, 0);
-    _internalState =
-        List<Int64>.filled(_internalState.length, Int64.fromInts(0, 0));
+    _internalState = List<Int64>.filled(_internalState.length, Int64.fromInts(0, 0));
 
     for (int i = 0; i < _chainValue!.length && (i * 8 < _digestSize); i++) {
       Uint8List bytes = ByteUtils.long2bytes(_chainValue![i]);
